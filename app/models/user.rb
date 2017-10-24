@@ -20,11 +20,12 @@ class User < ApplicationRecord
 
   validates :email, :phone_number, :uniqueness => { message: 'taken', :allow_nil => true }
 
-  validates_each :country_code, :gender, :birthdate do |record, attr, value|
+  validates_each :country_code, :gender, :birthdate, :avatar do |record, attr, value|
     record.errors.add(attr, 'inclusion') if attr == :country_code && !record.country_code?(value)
     record.errors.add(attr, 'inclusion') if attr == :gender && !record.gender?(value)
     record.errors.add(attr, 'in_the_future') if attr == :birthdate && record.future_birthdate?(value)
     record.errors.add(attr, 'invalid') if attr == :birthdate && !record.valid_birthdate?(value)
+    record.errors.add(attr, 'invalid_content_type') if attr == :avatar && !record.valid_avatar?(value)
   end
 
   def email_required?
@@ -49,6 +50,11 @@ class User < ApplicationRecord
   def valid_birthdate?(value)
     regex = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/
     !regex.match(value).nil?
+  end
+
+  def valid_avatar?(value)
+    regex = /\.(jpg|jpeg|png)$/ # Ubuntu accpts files with any name except that has slashes
+    !regex.match(value).nil? && value.count('/').zero?
   end
 
   private

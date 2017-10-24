@@ -19,7 +19,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         expire_data_after_sign_in!
 
         errors = format_errors(resource)
-        
+
         render json: {"errors": errors}, status: :created
       end
     else
@@ -32,25 +32,27 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
-  def format_errors(resource)
-    formated_errors = {}
-    errors_keys = resource.errors.keys
-    errors_keys.each do |key|
-      list_of_errors = resource.errors[key]
-      formated_errors[key.to_s] = list_of_errors.map { |error| {"error": error}}
-    end
-    formated_errors
-  end
-
   protected
 
-  def sign_up_params
-    devise_parameter_sanitizer.sanitize(:sign_up)
-  end
+    def sign_up_params
+      devise_parameter_sanitizer.sanitize(:sign_up)
+    end
 
-  def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :avatar, :country_code, :phone_number,
-      :gender, :birthdate])
-  end
+    def configure_sign_up_params
+      devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :avatar, :country_code, :phone_number,
+        :gender, :birthdate])
+    end
+
+  private
+
+    def format_errors(resource)
+      formated_errors = {}
+      errors_keys = resource.errors.keys
+      errors_keys.each do |key|
+        list_of_errors = resource.errors[key]
+        formated_errors[key.to_s] = list_of_errors.map { |error| {"error": error}}
+      end
+      formated_errors
+    end
 
 end
