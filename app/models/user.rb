@@ -7,18 +7,18 @@ class User < ApplicationRecord
   validates_presence_of :first_name, :last_name, :country_code, :phone_number, :gender, :birthdate, :avatar, message: 'blank'
 
   validates :phone_number, format:{
-    with: /\A\+?[1-9]\d{10}\z/,
+    with: /\A01[0|1|2|5]\d{8}\z/, # with + regex /\A\+?[1-9]\d{10}\z/
     message: "not in E.164 format"
   }
 
   validates :phone_number, numericality: { only_integer: true, message: 'not_a_number'}
   validates :phone_number, length: {
-    within: 12..12,
+    within: 11..11,
     too_short: "too short",
     too_long: "too long"
   }
 
-  validates :email, :uniqueness => { message: 'taken' }
+  validates :email, :phone_number, :uniqueness => { message: 'taken', :allow_nil => true }
 
   validates_each :country_code, :gender, :birthdate do |record, attr, value|
     record.errors.add(attr, 'inclusion') if attr == :country_code && !record.country_code?(value)
@@ -28,7 +28,7 @@ class User < ApplicationRecord
   end
 
   def email_required?
-    false
+    !self.email.nil?
   end
 
   def country_code?(value)
