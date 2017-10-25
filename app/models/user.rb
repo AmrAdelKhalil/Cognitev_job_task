@@ -8,4 +8,9 @@ class User < ApplicationRecord
   include AuthenticationToken
   include CustomValidation
 
+  protected
+    def password_required?
+      false
+    end
+
 end
