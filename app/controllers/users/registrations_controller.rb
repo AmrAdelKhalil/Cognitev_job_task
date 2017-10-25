@@ -13,7 +13,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
       if resource.active_for_authentication?
         sign_up(resource_name, resource)
-        resp =  JSON.parse(resource.to_json)
+
+        serializerd_user = UserSerializer.new(resource)
+        
+        resp =  JSON.parse(serializerd_user.to_json)
         render json: resp, status: :created
       else
         expire_data_after_sign_in!
